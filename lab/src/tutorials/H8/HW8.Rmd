@@ -1,0 +1,153 @@
+---
+title: "Homework8 - Social Networks"
+author: "Ahmed El Aamrani"
+date: "12/13/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Social Network of the United States Senate
+
+## Network display
+
+### Reading data
+
+```{r}
+library(igraph)
+senators <- read.csv("senators.csv")
+senatorLinks <- read.csv("senateCosponsorship.csv", stringsAsFactors=FALSE)
+G <- graph.data.frame(senatorLinks, directed=FALSE, senators)
+comp <- components(G)
+in.max.comp <- comp$membership == which.max(comp$csize)
+sg <- induced_subgraph(G, in.max.comp)
+sg.Senators <- senators[in.max.comp,]
+```
+
+### Plotting grah
+
+```{r}
+color.plot <- rep('white',nrow(senators)) 
+color.plot[senators$party=="R"] <- 'red'
+color.plot[senators$party=="D"] <- 'blue'
+color.plot[senators$party=="I"] <- 'white'
+set.seed(144)
+plot(G, vertex.label=NA, vertex.size=3, vertex.color = color.plot)
+```
+
+We can observe that there are a dozen of republican outliers who do not have any interactions with other nodes. However, the two indepedent senators have lots of interactions 
+
+## Centralities
+
+### Degree Centrality
+
+```{r}
+degree <- degree(G)
+set.seed(144)
+# Plot the sub-network
+plot(G, vertex.label=NA, vertex.size=0.3*degree,vertex.color = color.plot)
+# Top 10 most central Senators
+senators[order(degree,decreasing=TRUE)[1:10],]
+```
+
+### Closeness Centrality
+
+```{r}
+nodes.in.subgraph <- components(G)$membership == which.max(components(G)$csize)
+subgraph <- induced_subgraph(G, nodes.in.subgraph)
+closeness(subgraph)
+length(closeness(subgraph))
+cl <- rep(0, nrow(senators))
+cl[nodes.in.subgraph] <- closeness(subgraph)
+set.seed(144)
+# Plot the sub-network
+plot(G, vertex.label=NA, vertex.size=1100*cl, vertex.color = color.plot)
+# Top 10 most central Senators
+senators[order(cl,decreasing = T)[1:10],]
+```
+
+### Betweenness Cemtrality
+
+```{r}
+betweenness <- betweenness(G)
+set.seed(144)
+# Plot the sub-network
+plot(G, vertex.label=NA, vertex.size=0.03*betweenness,vertex.color = color.plot)
+# Top 10 most central Senators
+senators[order(betweenness,decreasing = T)[1:10],]
+```
+
+### PageRank Centrality
+
+```{r}
+page.rank.score <- page.rank(G)$vector
+set.seed(144)
+plot(G, vertex.label=NA, vertex.size=400*page.rank.score,vertex.color = color.plot)
+senators[order(page.rank.score,decreasing = T)[1:10],]
+```
+
+### Discussion
+
+The first remark is that the 10 most central Senators related to Degree, Closeness and PageRank are all democratic. This suggests that the Democratic party has more interactions with the whole network than the Republican. Furthermore, these three centralities have 9 common most central senators out of 10 (5,101,56,2,37,9,62,104 and 19), with Closeness and PageRank having the same set of senators for all 10 positions. Hence, Betweenness centrality is a bit different than others. This can be explained by the dact that betweennes, i.e number of shortest paths in which the node appears doesn't have much meaning in the senator interactions because usually they interact directly.
+
+## Betweenness-Degree comparison
+
+```{r}
+senators[order(degree,decreasing=TRUE)[1:10],]
+median(betweenness)
+median(degree)
+senators[(betweenness>25) & (degree < 9),]
+```
+
+### Discussion
+
+We set the thresholds in order to have a relatively high betweenness centrality and low degree centrality. For example, betweenness' median is 11.37 and 9 for the degree. With a threshold of 25 for betweenness and 9 for degree, we have 10 senators with elatively high betweenness centrality and low degree centrality. Such senators do not have too much iinteractions but are the intermediary to crucial interactions in the senate.
+
+## Community detection
+
+```{r}
+set.seed(144)
+spinglass <- cluster_spinglass(subgraph, spins = 100)
+community <- spinglass$membership
+table(community)
+```
+
+```{r}
+modularity <- spinglass$modularity
+modularity
+```
+
+There are 6 communities. The modularity of the assignment is 0.2839
+
+```{r}
+library(RColorBrewer)
+color.communities <- brewer.pal(max(community),"Spectral")
+set.seed(144)
+plot(subgraph, vertex.label=NA, vertex.size=6, vertex.color=color.communities[community])
+```
+
+## Community statistics
+
+```{r}
+library(dplyr)
+sg.Senators[,"community"] <- community
+# Distribution of Republican/Democrat/Independent Senators in each community
+sg.Senators %>%
+  group_by(community, party) %>%
+  summarise(count = n()) %>%
+  print(n=20)
+```
+
+```{r}
+# Distribution of State Senators in each community
+sg.Senators %>%
+  group_by(community, state) %>%
+  summarise(count = n()) %>%
+  print(n=60)
+```
+
+The communities are easily interpretable in terms of party. For example, the 1st community is mainly democratic with one independent senator and 2 republicans. Probably, the republicans involved here are the most left oriented in the party. While for example the second community is kind of center of the senate. The third community is mainly republican with one democrate who is probably on the right of the republican party. The sixth community is isolated from the rest and seems to have an independent decision system.
