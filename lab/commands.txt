@@ -1,3 +1,0 @@
-docker build -t altana-ai-use-case-lab .
-docker run --rm -p 8889:8888 altana-ai-use-case-lab start-notebook.py --NotebookApp.token='lab1' 
-http://localhost:8889/lab?token=lab1
