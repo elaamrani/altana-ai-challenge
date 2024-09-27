@@ -48,11 +48,11 @@ The lab creates collections in an Arango Database:
 ## Artifacts
 
 - ML model artifacts for country classification and link prediction.
-- You may need to run "link_prediction.ipynb" and/or "sites.ipynb" notebooks in order to save the generated ".joblib" artifacts locally for API testing
+- You may need to run "link_prediction.ipynb" and/or "sites.ipynb" notebooks in order to locally save the generated ".joblib" artifacts for API testing
 
-## Graph Metrics
+## Graphs
 
-Compute graph metrics such as degree centrality, closeness, betweenness, and page rank.
+Compute graph metrics such as degree centrality, closeness, betweenness, and page rank for 3 different graph nodes; e.g. countries, sites and organizations.
 
 ## Shutting Down Docker Services
 
