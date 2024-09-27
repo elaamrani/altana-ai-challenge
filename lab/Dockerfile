@@ -1,4 +1,4 @@
-FROM quay.io/jupyter/datascience-notebook
+FROM quay.io/jupyter/pytorch-notebook
 
 COPY requirements.txt ./
 

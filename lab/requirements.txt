@@ -1,7 +1,9 @@
 ipywidgets==8.1.5
 pandas==2.2.2
 matplotlib==3.9.2
-transformers==4.44.2
-torch==2.4.1
 python-arango==8.1.1
 scikit-learn==1.5.2
+joblib==1.4.2
+jupyter-resource-usage==1.1.0
+transformers==4.44.2
+graph-tools==1.14
