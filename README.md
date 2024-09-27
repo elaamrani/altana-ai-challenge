@@ -5,11 +5,7 @@ This solution leverages Docker to create a consistent environment with all neces
 - **Lab**: A JupyterLab container for modeling.
 - **API**: A FastAPI container for serving machine learning models.
 
-These services interact with an Arango DB database:
-
-- **Url**:
-- **Username**:
-- **Password**:
+Both these services interact with an Arango DB database.
 
 ## Getting Started
 
@@ -52,6 +48,7 @@ The lab creates collections in an Arango Database:
 ## Artifacts
 
 - ML model artifacts for country classification and link prediction.
+- Please make sure both `.joblib` files are copied to `api/app/artifacts` before running `docker-compose up`. You can also shut down the services and then restart them to apply changes.
 
 ## Graph Metrics
 
