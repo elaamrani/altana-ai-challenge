@@ -48,7 +48,7 @@ The lab creates collections in an Arango Database:
 ## Artifacts
 
 - ML model artifacts for country classification and link prediction.
-- Please make sure both `.joblib` files are copied to `api/app/artifacts` before running `docker-compose up`. You can also shut down the services and then restart them to apply changes.
+- You may need to run "link_prediction.ipynb" and/or "sites.ipynb" notebooks in order to save the generated ".joblib" artifacts locally for API testing
 
 ## Graph Metrics
 
